@@ -2,5 +2,5 @@
 for item in "en" "fr" "ja" "zh-Hant" "ko" "ru"
 do
     STRINGS_PATH="HTTPRequest/${item}.lproj/Localizable.strings"
-	cm_swift_localizer "HTTPRequest/" "${STRINGS_PATH}" -verbose
+	cm_swift_localizer "HTTPRequest/" "${STRINGS_PATH}"  -textSuffix ".hr_localized" -verbose
 done
