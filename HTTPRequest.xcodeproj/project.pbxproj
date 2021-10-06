@@ -7,13 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63FC5532270D741D0026124B /* HTTPRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63FC5530270D741D0026124B /* HTTPRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		63FC5539270D74380026124B /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FC5538270D74380026124B /* HTTPRequest.swift */; };
+		63FC553C270D7C580026124B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63FC553E270D7C580026124B /* Localizable.strings */; };
+		D9611BCE45EE9ED633A2DB01 /* Pods_HTTPRequest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12DB75D25CC012AA191C3ED5 /* Pods_HTTPRequest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		12C4BDFA43794C231DE2E8E4 /* Pods-HTTPRequest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPRequest.release.xcconfig"; path = "Target Support Files/Pods-HTTPRequest/Pods-HTTPRequest.release.xcconfig"; sourceTree = "<group>"; };
+		12DB75D25CC012AA191C3ED5 /* Pods_HTTPRequest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HTTPRequest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		63FC552D270D741D0026124B /* HTTPRequest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HTTPRequest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		63FC5530270D741D0026124B /* HTTPRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPRequest.h; sourceTree = "<group>"; };
 		63FC5531270D741D0026124B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		63FC5538270D74380026124B /* HTTPRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequest.swift; sourceTree = "<group>"; };
+		63FC553D270D7C580026124B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		63FC553F270D7C5D0026124B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		63FC5540270D7C600026124B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		63FC5541270D7C600026124B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		63FC5542270D7C620026124B /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		63FC5543270D7C620026124B /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		63FC5544270D7C630026124B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		BA41FAEE6CA2AA47ACE37F6D /* Pods-HTTPRequest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPRequest.debug.xcconfig"; path = "Target Support Files/Pods-HTTPRequest/Pods-HTTPRequest.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9611BCE45EE9ED633A2DB01 /* Pods_HTTPRequest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,6 +45,8 @@
 			children = (
 				63FC552F270D741D0026124B /* HTTPRequest */,
 				63FC552E270D741D0026124B /* Products */,
+				99B76CE0206B7BCC814B87F0 /* Pods */,
+				9F9124F881D138324F4A1DBA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -46,10 +61,28 @@
 		63FC552F270D741D0026124B /* HTTPRequest */ = {
 			isa = PBXGroup;
 			children = (
-				63FC5530270D741D0026124B /* HTTPRequest.h */,
+				63FC5538270D74380026124B /* HTTPRequest.swift */,
 				63FC5531270D741D0026124B /* Info.plist */,
+				63FC553E270D7C580026124B /* Localizable.strings */,
 			);
 			path = HTTPRequest;
+			sourceTree = "<group>";
+		};
+		99B76CE0206B7BCC814B87F0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BA41FAEE6CA2AA47ACE37F6D /* Pods-HTTPRequest.debug.xcconfig */,
+				12C4BDFA43794C231DE2E8E4 /* Pods-HTTPRequest.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		9F9124F881D138324F4A1DBA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				12DB75D25CC012AA191C3ED5 /* Pods_HTTPRequest.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,7 +92,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63FC5532270D741D0026124B /* HTTPRequest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +102,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 63FC5535270D741D0026124B /* Build configuration list for PBXNativeTarget "HTTPRequest" */;
 			buildPhases = (
+				A5D241282B555BBA39C36052 /* [CP] Check Pods Manifest.lock */,
 				63FC5528270D741D0026124B /* Headers */,
 				63FC5529270D741D0026124B /* Sources */,
 				63FC552A270D741D0026124B /* Frameworks */,
@@ -94,6 +127,7 @@
 				TargetAttributes = {
 					63FC552C270D741D0026124B = {
 						CreatedOnToolsVersion = 12.5;
+						LastSwiftMigration = 1250;
 					};
 				};
 			};
@@ -104,6 +138,12 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
+				"zh-Hant",
+				fr,
+				ja,
+				ko,
+				ru,
 			);
 			mainGroup = 63FC5523270D741D0026124B;
 			productRefGroup = 63FC552E270D741D0026124B /* Products */;
@@ -120,20 +160,64 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FC553C270D7C580026124B /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A5D241282B555BBA39C36052 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-HTTPRequest-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		63FC5529270D741D0026124B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FC5539270D74380026124B /* HTTPRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		63FC553E270D7C580026124B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63FC553D270D7C580026124B /* en */,
+				63FC553F270D7C5D0026124B /* zh-Hans */,
+				63FC5540270D7C600026124B /* zh-Hant */,
+				63FC5541270D7C600026124B /* fr */,
+				63FC5542270D7C620026124B /* ja */,
+				63FC5543270D7C620026124B /* ko */,
+				63FC5544270D7C630026124B /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		63FC5533270D741D0026124B /* Debug */ = {
@@ -260,7 +344,9 @@
 		};
 		63FC5536270D741D0026124B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BA41FAEE6CA2AA47ACE37F6D /* Pods-HTTPRequest.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 976NLVLZMW;
@@ -277,6 +363,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hanin.HTTPRequest;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -284,7 +371,9 @@
 		};
 		63FC5537270D741D0026124B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12C4BDFA43794C231DE2E8E4 /* Pods-HTTPRequest.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 976NLVLZMW;
