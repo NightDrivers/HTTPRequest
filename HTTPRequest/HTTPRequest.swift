@@ -14,7 +14,7 @@ import MobileCoreServices
 
 fileprivate var FrameworkBundle: Bundle = {
     
-    return Bundle.init(for: HTTPRequest.self)
+    return Bundle.init(for: MIMEHelper.self)
 }()
 
 fileprivate extension String {
@@ -25,7 +25,29 @@ fileprivate extension String {
     }
 }
 
-open class HTTPRequest {
+public class MIMEHelper {
+    
+    public static func mimeType(forPathExtension pathExtension: String) -> String {
+        if
+            let id = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeRetainedValue(),
+            let contentType = UTTypeCopyPreferredTagWithClass(id, kUTTagClassMIMEType)?.takeRetainedValue()
+        {
+            return contentType as String
+        }
+        
+        return "application/octet-stream"
+    }
+}
+
+public struct HTTPRequest {
+    
+    public static let `default` = HTTPRequest()
+    
+    public init(adaptHandler: @escaping (Options, Any?) -> (options: Options, params: Any?) = { ($0, $1) }) {
+        self.adaptHandler = adaptHandler
+    }
+    
+    public let adaptHandler: (Options, Any?) -> (options: Options, params: Any?)
     
     public static var showActivityClosure: (() -> Void)?
     public static var showErrorClosure: ((String) -> Void)?
@@ -167,28 +189,62 @@ open class HTTPRequest {
         }
         
         public static var `default` : Options { return Options() }
+        
+        public static var silence : Options { Options.init(activityVisible: false) }
     }
     
-    public static func dataRequest(_ url: URLConvertible,
+    @discardableResult
+    public func dataRequest(_ url: URLConvertible,
                         method: HTTPMethod,
                         options: Options = Options.default,
-                        parameters: Parameters?,
-                        completeClosure: @escaping (Swift.Result<Data, ResponseError>) -> Void) 
-    {
+                        parameters: Any?,
+                        completeClosure: @escaping (Swift.Result<Data, ResponseError>) -> Void
+    ) -> DataRequest {
+        
         if options.activityVisible {
-            showActivityClosure?()
+            HTTPRequest.showActivityClosure?()
         }
         var request = try! URLRequest(url: url, method: method, headers: nil)
-        request = try! options.encoding.encode(request, with: parameters)
-        request.timeoutInterval = options.timeout
-        for item in options.httpHeaders {
-            request.addValue(item.value, forHTTPHeaderField: item.name)
+        let items = adaptHandler(options, parameters)
+        if items.params == nil {
+            request = try! items.options.encoding.encode(request, with: nil)
+        }else if let params = items.params as? Parameters {
+            request = try! items.options.encoding.encode(request, with: params)
+        }else {
+            if let encoding = items.options.encoding as? JSONEncoding {
+                request = try! encoding.encode(request, withJSONObject: items.params)
+            }else {
+                fatalError("parameters not dictionary can't encode")
+            }
+        }
+        
+        request.timeoutInterval = items.options.timeout
+        items.options.httpHeaders.forEach({ request.addValue($0.value, forHTTPHeaderField: $0.name) })
+        
+        if HTTPRequest.logEnabled {
+            var description = "#   #   #   #   #   #   #   #   #   #\n"
+            description += "Request\n\n"
+            description += "URL: "
+            description += try! url.asURL().description
+            description += "\n\n"
+            if let headers = request.allHTTPHeaderFields {
+                description += "Header:\n\n"
+                description += headers.map({ String.init(format: "%@ : %@", $0.key, $0.value) }).joined(separator: "\n")
+                description += "\n\n"
+            }
+            
+            if let body = request.httpBody {
+                description += "Body:\n\n"
+                description += String.init(data: body, encoding: .utf8)!
+            }
+            description += "#   #   #   #   #   #   #   #   #   #\n"
+            print(description)
         }
         
         let dataRequest = Session.default.request(request)
         dataRequest.response(completionHandler: {
             if options.activityVisible {
-                dismissToastClosure?()
+                HTTPRequest.dismissToastClosure?()
             }
             if let httpResponse = $0.response {
                 if httpResponse.statusCode == 200 {
@@ -208,15 +264,18 @@ open class HTTPRequest {
                 }
             }
         })
+        return dataRequest
     }
     
-    public static func request(_ url: URLConvertible,
+    @discardableResult
+    public func request(_ url: URLConvertible,
                         method: HTTPMethod,
                         options: Options = Options.default,
                         parameters: Parameters?,
-                        completeClosure: @escaping (Swift.Result<JSON, ResponseError>) -> Void) 
-    {
-        dataRequest(url, method: method, options: options, parameters: parameters, completeClosure: {
+                        completeClosure: @escaping (Swift.Result<JSON, ResponseError>) -> Void
+    ) -> DataRequest {
+        
+        return dataRequest(url, method: method, options: options, parameters: parameters, completeClosure: {
             switch $0 {
             case .success(let data):
                 if let json = try? JSON.init(data: data) {
@@ -230,6 +289,7 @@ open class HTTPRequest {
         })
     }
     
+    @discardableResult
     public static func uploadMultipartFormData(
         url: URLConvertible, 
         options: Options = Options.default,
@@ -237,7 +297,7 @@ open class HTTPRequest {
         multipartFormData: @escaping (MultipartFormData) -> Void,
         progressClosure: ((Progress) -> Void)?,
         completeClosure: @escaping (Swift.Result<JSON, ResponseError>) -> Void
-    ) {
+    ) -> UploadRequest {
         
         var request = try! URLRequest(url: url, method: .post, headers: options.httpHeaders)
         request.timeoutInterval = options.timeout
@@ -264,15 +324,17 @@ open class HTTPRequest {
                 completeClosure($0)
             })
         })
+        return uploadRequest
     }
     
+    @discardableResult
     public static func download(
         url: URLConvertible, 
         headers: HTTPHeaders? = nil,
         destinationUrl: @escaping ((HTTPURLResponse) -> URL), 
         completeHandle: @escaping ((AFDownloadResponse<Data>) -> Void),
         progressHandle: ((Progress) -> Void)? = nil
-    ) {
+    ) -> DownloadRequest {
         
         let request = Session.default.download(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, to:  {
             let url = try! destinationUrl($1).asURL()
@@ -282,16 +344,6 @@ open class HTTPRequest {
             request.downloadProgress(closure: temp)
         }
         request.responseData(completionHandler: completeHandle)
-    }
-    
-    public static func mimeType(forPathExtension pathExtension: String) -> String {
-        if
-            let id = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeRetainedValue(),
-            let contentType = UTTypeCopyPreferredTagWithClass(id, kUTTagClassMIMEType)?.takeRetainedValue()
-        {
-            return contentType as String
-        }
-        
-        return "application/octet-stream"
+        return request
     }
 }
