@@ -43,11 +43,17 @@ public struct HTTPRequest {
     
     public static let `default` = HTTPRequest()
     
-    public init(adaptHandler: @escaping (Options, Any?) -> (options: Options, params: Any?) = { ($0, $1) }) {
+    public init(
+        adaptHandler: @escaping (Options, Any?) -> (options: Options, params: Any?) = { ($0, $1) },
+        completeSuccessInjectHandler: ((Any) -> Void)? = nil
+    ) {
         self.adaptHandler = adaptHandler
+        self.completeSuccessInjectHandler = completeSuccessInjectHandler
     }
     
     public let adaptHandler: (Options, Any?) -> (options: Options, params: Any?)
+    
+    public let completeSuccessInjectHandler: ((Any) -> Void)?
     
     public static var showActivityClosure: (() -> Void)?
     public static var showErrorClosure: ((String) -> Void)?
@@ -249,6 +255,7 @@ public struct HTTPRequest {
             if let httpResponse = $0.response {
                 if httpResponse.statusCode == 200 {
                     if let data = $0.data {
+                        completeSuccessInjectHandler?(data)
                         completeClosure(.success(data))
                     }else {
                         completeClosure(.failure(ResponseError.emptyBody))
@@ -271,7 +278,7 @@ public struct HTTPRequest {
     public func request(_ url: URLConvertible,
                         method: HTTPMethod,
                         options: Options = Options.default,
-                        parameters: Parameters?,
+                        parameters: Any?,
                         completeClosure: @escaping (Swift.Result<JSON, ResponseError>) -> Void
     ) -> DataRequest {
         
@@ -279,6 +286,7 @@ public struct HTTPRequest {
             switch $0 {
             case .success(let data):
                 if let json = try? JSON.init(data: data) {
+                    completeSuccessInjectHandler?(json)
                     completeClosure(.success(json))
                 }else {
                     completeClosure(.failure(ResponseError.bodyNotJson(data: data)))
@@ -290,20 +298,21 @@ public struct HTTPRequest {
     }
     
     @discardableResult
-    public static func uploadMultipartFormData(
+    public func uploadMultipartFormData(
         url: URLConvertible, 
         options: Options = Options.default,
-        parameters: Parameters? = nil,
+        parameters: Any? = nil,
         multipartFormData: @escaping (MultipartFormData) -> Void,
         progressClosure: ((Progress) -> Void)?,
         completeClosure: @escaping (Swift.Result<JSON, ResponseError>) -> Void
     ) -> UploadRequest {
         
-        var request = try! URLRequest(url: url, method: .post, headers: options.httpHeaders)
+        let items = adaptHandler(options, parameters)
+        var request = try! URLRequest(url: url, method: .post, headers: items.options.httpHeaders)
         request.timeoutInterval = options.timeout
         
         let closure: (MultipartFormData) -> Void = {
-            if let temp = parameters {
+            if let temp = items.params as? Parameters {
                 var components = [(String, String)]()
                 for (key, value) in temp {
                     components += URLEncoding.default.queryComponents(fromKey: key, value: value)
@@ -320,7 +329,13 @@ public struct HTTPRequest {
             uploadRequest.uploadProgress(closure: progressClosure)
         }
         uploadRequest.response(completionHandler: {
-            self.jsonResponseResolve(response: $0, completeClosure: {
+            HTTPRequest.jsonResponseResolve(response: $0, completeClosure: {
+                switch $0 {
+                case .success(let json):
+                    completeSuccessInjectHandler?(json)
+                case .failure(_):
+                    break
+                }
                 completeClosure($0)
             })
         })
