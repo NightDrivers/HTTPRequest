@@ -62,19 +62,22 @@ public struct HTTPRequest {
     
     public enum ResponseError: Error, CustomStringConvertible {
         case emptyBody
-        case empty
+        case unknown
         case bodyNotJson(data: Data)
         case statusCode(code: Int)
         case network(Error)
         case multipartEncode(Error)
+        case notReachable
         
         public var description: String {
             
             switch self {
+            case .notReachable:
+                return "网络请求失败，网络不可用".localized
             case .emptyBody:
-                return "服务器错误，无响应数据，请联系客服".hr_localized
-            case .empty:
-                return "服务器错误，无响应，请联系客服".hr_localized
+                return "网络请求失败，无响应数据，请联系客服".hr_localized
+            case .unknown:
+                return "网络请求失败，未知错误".hr_localized
             case .bodyNotJson(data: _):
                 return "服务器错误，响应数据格式错误(NOT JSON)，请联系客服".hr_localized
             case .statusCode(code: let code):
@@ -172,10 +175,19 @@ public struct HTTPRequest {
                 completeClosure(.failure(ResponseError.statusCode(code: httpResponse.statusCode)))
             }
         }else {
+            completeClosure(.failure(dataResponseErrorMap(response: response)))
+        }
+    }
+    
+    private static func dataResponseErrorMap(response: AFDataResponse<Data?>) -> ResponseError {
+        
+        if let reachability = NetworkReachabilityManager.default, !reachability.isReachable {
+            return .notReachable
+        }else {
             if let error = response.error {
-                completeClosure(.failure(ResponseError.network(error)))
+                return .network(error)
             }else {
-                completeClosure(.failure(ResponseError.empty))
+                return .unknown
             }
         }
     }
@@ -243,7 +255,7 @@ public struct HTTPRequest {
                 description += "Body:\n\n"
                 description += String.init(data: body, encoding: .utf8)!
             }
-            description += "#   #   #   #   #   #   #   #   #   #\n"
+            description += "\n\n#   #   #   #   #   #   #   #   #   #\n"
             print(description)
         }
         
@@ -264,11 +276,7 @@ public struct HTTPRequest {
                     completeClosure(.failure(ResponseError.statusCode(code: httpResponse.statusCode)))
                 }
             }else {
-                if let error = $0.error {
-                    completeClosure(.failure(ResponseError.network(error)))
-                }else {
-                    completeClosure(.failure(ResponseError.empty))
-                }
+                completeClosure(.failure(HTTPRequest.dataResponseErrorMap(response: $0)))
             }
         })
         return dataRequest

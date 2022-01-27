@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "HTTPRequest"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "Alamofire简单封装"
   s.swift_version = "5.0"
   s.description  = <<-DESC
